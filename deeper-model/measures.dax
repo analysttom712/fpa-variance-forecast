@@ -1,0 +1,110 @@
+// Proposed DAX measures for the deeper model (built on the views in sql/10_model_views.sql).
+// Tables, as imported from the fpa views: FactFinance, DimAccount, DimPeriod, DimOrganization, DimDepartment.
+// Relationships (all single direction, many-to-one from FactFinance):
+//   FactFinance[AccountKey]         -> DimAccount[AccountKey]
+//   FactFinance[PeriodEnd]          -> DimPeriod[PeriodEnd]
+//   FactFinance[OrganizationKey]    -> DimOrganization[OrganizationKey]
+//   FactFinance[DepartmentGroupKey] -> DimDepartment[DepartmentGroupKey]
+// Not yet built or tested in Power BI Desktop. The SQL behind every number was tested in SQL Server.
+
+DEFINE
+    // ---------- Base ----------
+    MEASURE FactFinance[Actual USD] =
+        CALCULATE ( SUM ( FactFinance[AmountUSD] ), FactFinance[Scenario] = "Actual" )
+    MEASURE FactFinance[Budget USD] =
+        CALCULATE ( SUM ( FactFinance[AmountUSD] ), FactFinance[Scenario] = "Budget" )
+
+    // ---------- P&L, in USD, net of returns and discounts, intercompany shown but not in sales ----------
+    MEASURE FactFinance[Gross Sales] =
+        CALCULATE ( [Actual USD], DimAccount[StatementLine] = "1 Gross sales" )
+    MEASURE FactFinance[Intercompany Sales] =
+        CALCULATE ( [Actual USD], DimAccount[StatementLine] = "2 Intercompany sales (eliminate)" )
+    MEASURE FactFinance[Returns and Discounts] =
+        CALCULATE ( [Actual USD], DimAccount[StatementLine] = "3 Returns and discounts" )
+    MEASURE FactFinance[Net Sales] = [Gross Sales] - [Returns and Discounts]
+    MEASURE FactFinance[Cost of Sales] =
+        CALCULATE ( [Actual USD], DimAccount[StatementLine] = "4 Cost of sales" )
+    MEASURE FactFinance[Gross Margin] = [Net Sales] - [Cost of Sales]
+    MEASURE FactFinance[Gross Margin %] = DIVIDE ( [Gross Margin], [Net Sales] )
+    MEASURE FactFinance[Operating Expenses] =
+        CALCULATE ( [Actual USD], DimAccount[StatementLine] = "5 Operating expenses" )
+    MEASURE FactFinance[Operating Profit] = [Gross Margin] - [Operating Expenses]
+    MEASURE FactFinance[Operating Margin %] = DIVIDE ( [Operating Profit], [Net Sales] )
+    MEASURE FactFinance[Other Income Net] =
+        CALCULATE (
+            SUMX ( FactFinance, FactFinance[AmountUSD] * RELATED ( DimAccount[ProfitSign] ) ),
+            FactFinance[Scenario] = "Actual",
+            DimAccount[StatementLine] = "6 Other income and expense"
+        )
+    MEASURE FactFinance[Taxes] =
+        CALCULATE ( [Actual USD], DimAccount[StatementLine] = "7 Taxes" )
+    MEASURE FactFinance[Net Income] = [Operating Profit] + [Other Income Net] - [Taxes]
+    MEASURE FactFinance[Net Margin %] = DIVIDE ( [Net Income], [Net Sales] )
+    MEASURE FactFinance[OpEx % of Net Sales] = DIVIDE ( [Operating Expenses], [Net Sales] )
+
+    // ---------- Prior year, same months (keeps any month filter, so Jan-Nov stays Jan-Nov) ----------
+    MEASURE FactFinance[Net Sales PY] =
+        VAR y = MAX ( DimPeriod[FiscalYear] )
+        RETURN CALCULATE ( [Net Sales], DimPeriod[FiscalYear] = y - 1 )
+    MEASURE FactFinance[Operating Expenses PY] =
+        VAR y = MAX ( DimPeriod[FiscalYear] )
+        RETURN CALCULATE ( [Operating Expenses], DimPeriod[FiscalYear] = y - 1 )
+    MEASURE FactFinance[Net Sales Growth %] = DIVIDE ( [Net Sales] - [Net Sales PY], [Net Sales PY] )
+    MEASURE FactFinance[OpEx Growth %] =
+        DIVIDE ( [Operating Expenses] - [Operating Expenses PY], [Operating Expenses PY] )
+
+    // ---------- Statistical: headcount is a balance, so take the last period in the selection ----------
+    MEASURE FactFinance[Headcount] =
+        VAR LastPeriod =
+            CALCULATE (
+                MAX ( FactFinance[PeriodEnd] ),
+                DimAccount[AccountCode] = 9510,
+                FactFinance[Scenario] = "Actual"
+            )
+        RETURN
+            CALCULATE (
+                SUM ( FactFinance[AmountLocal] ),
+                DimAccount[AccountCode] = 9510,
+                FactFinance[Scenario] = "Actual",
+                DimPeriod[PeriodEnd] = LastPeriod
+            )
+    MEASURE FactFinance[OpEx per Head] = DIVIDE ( [Operating Expenses], [Headcount] )
+
+    // ---------- Budget vs actual: only where a budget exists (same account, period and organization) ----------
+    MEASURE FactFinance[Comparable Actual] =
+        SUMX (
+            SUMMARIZE ( FactFinance, FactFinance[AccountKey], FactFinance[PeriodEnd], FactFinance[OrganizationKey] ),
+            IF ( NOT ISBLANK ( [Budget USD] ), [Actual USD] )
+        )
+    MEASURE FactFinance[Budget Variance] = [Comparable Actual] - [Budget USD]
+    // Positive = good for profit: more revenue than budget, or less cost than budget.
+    MEASURE FactFinance[Budget Variance (favorable +)] =
+        SUMX (
+            VALUES ( DimAccount[AccountKey] ),
+            ( [Comparable Actual] - [Budget USD] ) * CALCULATE ( MAX ( DimAccount[ProfitSign] ) )
+        )
+    MEASURE FactFinance[Budget Variance %] = DIVIDE ( [Budget Variance], [Budget USD] )
+
+    // ---------- Balance sheet: balances are snapshots, take the last period ----------
+    MEASURE FactFinance[Balance USD] =
+        VAR LastPeriod =
+            CALCULATE ( MAX ( FactFinance[PeriodEnd] ), DimAccount[StatementLine] = "Balance sheet", FactFinance[Scenario] = "Actual" )
+        RETURN
+            CALCULATE (
+                [Actual USD],
+                DimAccount[StatementLine] = "Balance sheet",
+                DimPeriod[PeriodEnd] = LastPeriod
+            )
+
+    // ---------- Checks: put these on a Checks page; each must show the value in its comment ----------
+    MEASURE FactFinance[Check Rows Loaded] = COUNTROWS ( FactFinance )           // 39,409
+    MEASURE FactFinance[Check Missing Rates] = SUM ( FactFinance[MissingRate] )   // 0
+    MEASURE FactFinance[Check Balance Sheet Off] =                                // 0
+        SUMX (
+            VALUES ( DimPeriod[PeriodEnd] ),
+            VAR Diff =
+                CALCULATE ( SUM ( FactFinance[AmountLocal] ), DimAccount[AccountType] = "Assets", FactFinance[Scenario] = "Actual" )
+                    - CALCULATE ( SUM ( FactFinance[AmountLocal] ), DimAccount[AccountType] = "Liabilities", FactFinance[Scenario] = "Actual" )
+            RETURN IF ( ABS ( Diff ) > 1, 1, 0 )
+        )
+    MEASURE FactFinance[Check Periods Per Year] = DISTINCTCOUNT ( DimPeriod[FiscalMonth] )  // 12 for 2011 to 2013
