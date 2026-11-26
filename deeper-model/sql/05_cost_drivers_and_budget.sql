@@ -1,4 +1,5 @@
-﻿/* Step 5. What drives the margin decline: operating expenses by line and department, headcount, and 2011 budget against actual on a like-for-like basis.
+-- Written by Claude (AI) at Thomas Baynum's direction; run and checked against AdventureWorksDW2025.
+/* Step 5. What drives the margin decline: operating expenses by line and department, headcount, and 2011 budget against actual on a like-for-like basis.
    Read-only. Run in SSMS against AdventureWorksDW2025. */
 USE AdventureWorksDW2025;
 SET NOCOUNT ON;

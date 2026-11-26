@@ -1,4 +1,5 @@
 // FP&A variance and forecast: all DAX measures
+// Written by Thomas Baynum and Claude (AI) together; no per-measure record of who wrote which. Thomas tested and corrected every measure.
 // Thomas Baynum · Power BI on Microsoft's AdventureWorksDW sample data
 // Exported from Power BI Desktop (DAX query view → Define all measures in this model).
 // Paste into DAX query view and select Run to see every measure evaluated.

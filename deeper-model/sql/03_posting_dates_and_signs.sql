@@ -1,4 +1,5 @@
-﻿/* Step 3. Find out why the months look wrong (drifting posting dates), confirm Corporate is its own department, and list the profit lines with their signs.
+-- Written by Claude (AI) at Thomas Baynum's direction; run and checked against AdventureWorksDW2025.
+/* Step 3. Find out why the months look wrong (drifting posting dates), confirm Corporate is its own department, and list the profit lines with their signs.
    Read-only. Run in SSMS against AdventureWorksDW2025. */
 USE AdventureWorksDW2025;
 SET NOCOUNT ON;

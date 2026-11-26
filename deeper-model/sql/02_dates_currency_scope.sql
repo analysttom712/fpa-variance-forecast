@@ -1,4 +1,5 @@
-﻿/* Step 2. Test the assumptions: which months exist, whether amounts are in local currency, rate coverage, whether Corporate double counts, which account types carry units instead of money, intercompany, and finance sales against the sales fact tables.
+-- Written by Claude (AI) at Thomas Baynum's direction; run and checked against AdventureWorksDW2025.
+/* Step 2. Test the assumptions: which months exist, whether amounts are in local currency, rate coverage, whether Corporate double counts, which account types carry units instead of money, intercompany, and finance sales against the sales fact tables.
    Read-only. Run in SSMS against AdventureWorksDW2025. */
 USE AdventureWorksDW2025;
 SET NOCOUNT ON;

@@ -1,4 +1,5 @@
-/* Proposed model views for a deeper FP&A Power BI model on AdventureWorksDW2025.
+-- Written by Claude (AI) at Thomas Baynum's direction; run and checked against AdventureWorksDW2025.
+/* Model views for the deeper FP&A Power BI model on AdventureWorksDW2025.
    Run in SSMS against AdventureWorksDW2025. Creates schema fpa and five views; changes no data.
    Power BI then imports the five views instead of the single grouped query. */
 

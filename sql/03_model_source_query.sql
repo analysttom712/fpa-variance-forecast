@@ -1,4 +1,5 @@
-﻿-- Source query behind the Power BI 'Query' table (copied from the model's Power Query step).
+-- Written by Thomas Baynum.
+-- Source query behind the Power BI 'Query' table (copied from the model's Power Query step).
 -- Grain: account x scenario x year x month. Amounts are in local currency (not converted to USD);
 -- see deeper-model/sql/10_model_views.sql for the USD-converted version.
 

@@ -1,4 +1,5 @@
-﻿/* Step 4. Rebuild the P&L in USD, net of returns and discounts, without intercompany, and compare it with what the original model reports. Then rank organizations by 2013 operating profit.
+-- Written by Claude (AI) at Thomas Baynum's direction; run and checked against AdventureWorksDW2025.
+/* Step 4. Rebuild the P&L in USD, net of returns and discounts, without intercompany, and compare it with what the original model reports. Then rank organizations by 2013 operating profit.
    Read-only. Run in SSMS against AdventureWorksDW2025. */
 USE AdventureWorksDW2025;
 SET NOCOUNT ON;

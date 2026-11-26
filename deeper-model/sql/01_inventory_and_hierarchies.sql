@@ -1,4 +1,5 @@
-﻿/* Step 1. What is in the database: every table and row count, the FactFinance columns, scenarios by year, organizations, departments and the full account tree with postings per account.
+-- Written by Claude (AI) at Thomas Baynum's direction; run and checked against AdventureWorksDW2025.
+/* Step 1. What is in the database: every table and row count, the FactFinance columns, scenarios by year, organizations, departments and the full account tree with postings per account.
    Read-only. Run in SSMS against AdventureWorksDW2025. */
 USE AdventureWorksDW2025;
 SET NOCOUNT ON;
