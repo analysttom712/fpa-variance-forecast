@@ -1,0 +1,103 @@
+table Query
+	lineageTag: ee11c37b-72a7-4223-acd6-943a5d7baa79
+
+	column AccountType
+		dataType: string
+		lineageTag: 952f7d00-49f2-4fd8-9e78-e9a4db111732
+		summarizeBy: none
+		sourceColumn: AccountType
+
+		annotation SummarizationSetBy = Automatic
+
+	column AccountCode
+		dataType: int64
+		formatString: 0
+		lineageTag: 98f6292d-23a4-472e-8469-1bafd6d42582
+		summarizeBy: none
+		sourceColumn: AccountCode
+
+		annotation SummarizationSetBy = User
+
+	column AccountDescription
+		dataType: string
+		lineageTag: 75f44862-2ae0-46a8-add3-1e5fc8a84ba1
+		summarizeBy: none
+		sourceColumn: AccountDescription
+
+		annotation SummarizationSetBy = Automatic
+
+	column ScenarioName
+		dataType: string
+		lineageTag: ee62bbef-0145-4f0c-95d2-469d645e034e
+		summarizeBy: none
+		sourceColumn: ScenarioName
+
+		annotation SummarizationSetBy = Automatic
+
+	column FinanceYear
+		dataType: int64
+		formatString: 0
+		lineageTag: d01f94c5-ba2b-4211-bd71-9aaff1937262
+		summarizeBy: none
+		sourceColumn: FinanceYear
+
+		changedProperty = SortByColumn
+
+		annotation SummarizationSetBy = User
+
+	column TotalAmount
+		dataType: decimal
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 668bbb46-2d23-46be-95f2-07678e8ca60c
+		summarizeBy: sum
+		sourceColumn: TotalAmount
+
+		annotation SummarizationSetBy = Automatic
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column 'Expenditure Group' =
+			
+			VAR ThisShare =
+			    DIVIDE(
+			        CALCULATE([Expenditures], ALLEXCEPT(Query, Query[AccountDescription])),
+			        CALCULATE([Expenditures], ALL(Query))
+			    )
+			RETURN
+			    IF(ThisShare < 0.03, "Other", Query[AccountDescription])
+		dataType: string
+		lineageTag: 718ef36d-3eef-412e-80a9-5a256dc2e84d
+		summarizeBy: none
+
+		changedProperty = DataType
+
+		annotation SummarizationSetBy = Automatic
+
+	column AccountBucket
+		dataType: string
+		lineageTag: d5389047-3cc8-466b-ab3f-f61fe117a6d4
+		summarizeBy: none
+		sourceColumn: AccountBucket
+
+		annotation SummarizationSetBy = Automatic
+
+	column MonthNum
+		dataType: int64
+		formatString: 0
+		lineageTag: 653cbed6-51d7-460c-b27a-4bf5170a03c0
+		summarizeBy: none
+		sourceColumn: MonthNum
+
+		annotation SummarizationSetBy = User
+
+	partition Query = m
+		mode: import
+		source =
+				let
+				  Source = Sql.Database("localhost\SQLEXPRESS", "AdventureWorksDW2025", [Query = "SELECT DimAccount.AccountType,#(lf)       CASE #(lf)           WHEN DimAccount.AccountType = 'Expenditures' THEN 'Cost'#(lf)           ELSE 'Revenue or Balance Sheet'#(lf)       END AS AccountBucket,#(lf)       DimAccount.AccountCodeAlternateKey AS AccountCode,#(lf)       DimAccount.AccountDescription,#(lf)       DimScenario.ScenarioName,#(lf)       YEAR(FactFinance.Date) AS FinanceYear,#(lf)       MONTH(FactFinance.Date) AS MonthNum,#(lf)       SUM(FactFinance.Amount) AS TotalAmount#(lf)FROM FactFinance#(lf)JOIN DimScenario ON FactFinance.ScenarioKey = DimScenario.ScenarioKey#(lf)JOIN DimAccount ON FactFinance.AccountKey = DimAccount.AccountKey#(lf)GROUP BY DimAccount.AccountType,#(lf)         CASE #(lf)             WHEN DimAccount.AccountType = 'Expenditures' THEN 'Cost'#(lf)             ELSE 'Revenue or Balance Sheet'#(lf)         END,#(lf)         DimAccount.AccountCodeAlternateKey,#(lf)         DimAccount.AccountDescription,#(lf)         DimScenario.ScenarioName,#(lf)         YEAR(FactFinance.Date),#(lf)         MONTH(FactFinance.Date)"]),
+				  #"Changed column type" = Table.TransformColumnTypes(Source, {{"TotalAmount", Currency.Type}})
+				in
+				  #"Changed column type"
+
+	annotation PBI_ResultType = Table
+

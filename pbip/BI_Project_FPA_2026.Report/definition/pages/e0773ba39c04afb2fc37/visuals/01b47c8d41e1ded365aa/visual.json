@@ -1,0 +1,161 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "01b47c8d41e1ded365aa",
+  "position": {
+    "x": 304.41558441558442,
+    "y": 602.59740259740261,
+    "z": 0,
+    "height": 187.4846625766871,
+    "width": 1311.4110429447853,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Query"
+                    }
+                  },
+                  "Property": "FinanceYear"
+                }
+              },
+              "queryRef": "Query.FinanceYear",
+              "nativeQueryRef": "FinanceYear",
+              "active": true
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Question 2"
+                    }
+                  },
+                  "Property": "Revenue"
+                }
+              },
+              "queryRef": "Question 2.Revenue",
+              "nativeQueryRef": "Revenue"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Question 2"
+                    }
+                  },
+                  "Property": "Expenditures"
+                }
+              },
+              "queryRef": "Question 2.Expenditures",
+              "nativeQueryRef": "Expenditures"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Question 2"
+                    }
+                  },
+                  "Property": "Net operating result"
+                }
+              },
+              "queryRef": "Question 2.Net Income/Loss",
+              "nativeQueryRef": "Net operating result"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Question 2"
+                    }
+                  },
+                  "Property": "Net operating result of Revenue"
+                }
+              },
+              "queryRef": "Question 2.Net Income/Loss % of Revenue",
+              "nativeQueryRef": "Net operating result of Revenue"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Question 2"
+                    }
+                  },
+                  "Property": "Prior Year Net operating result"
+                }
+              },
+              "queryRef": "Question 2.Prior Year Net Income/Loss",
+              "nativeQueryRef": "Prior Year Net operating result"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Question 2"
+                    }
+                  },
+                  "Property": "Change in Net operating result"
+                }
+              },
+              "queryRef": "Question 2.Change in Net Income/Loss",
+              "nativeQueryRef": "Change in Net operating result"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Column": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Query"
+                  }
+                },
+                "Property": "FinanceYear"
+              }
+            },
+            "direction": "Ascending"
+          }
+        ]
+      }
+    },
+    "expansionStates": [
+      {
+        "roles": [
+          "Rows"
+        ],
+        "levels": [
+          {
+            "queryRefs": [
+              "Query.FinanceYear"
+            ],
+            "isCollapsed": true,
+            "isPinned": true
+          }
+        ],
+        "root": {}
+      }
+    ],
+    "drillFilterOtherVisuals": true
+  }
+}

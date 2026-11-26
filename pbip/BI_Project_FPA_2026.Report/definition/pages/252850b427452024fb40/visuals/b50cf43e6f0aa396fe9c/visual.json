@@ -1,0 +1,188 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "b50cf43e6f0aa396fe9c",
+  "position": {
+    "x": 0,
+    "y": 382.8639053254438,
+    "z": 5000,
+    "height": 181.77514792899407,
+    "width": 1047.4792899408283,
+    "tabOrder": 5000
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Query"
+                    }
+                  },
+                  "Property": "FinanceYear"
+                }
+              },
+              "queryRef": "Query.FinanceYear",
+              "nativeQueryRef": "FinanceYear",
+              "active": true
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Question 2"
+                    }
+                  },
+                  "Property": "Revenue"
+                }
+              },
+              "queryRef": "Question 2.Revenue",
+              "nativeQueryRef": "Revenue"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Question 2"
+                    }
+                  },
+                  "Property": "Expenditures"
+                }
+              },
+              "queryRef": "Question 2.Expenditures",
+              "nativeQueryRef": "Expenditures"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Question 2"
+                    }
+                  },
+                  "Property": "Net operating result"
+                }
+              },
+              "queryRef": "Question 2.Net operating result",
+              "nativeQueryRef": "Net operating result"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Ratios"
+                    }
+                  },
+                  "Property": "Net Profit Margin %"
+                }
+              },
+              "queryRef": "Question 4.Net Profit Margin %",
+              "nativeQueryRef": "Net Profit Margin %"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "stylePreset": [
+        {
+          "properties": {
+            "name": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Condensed'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "100fc8ee6893e07c20eb",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Query"
+              }
+            },
+            "Property": "FinanceYear"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "66f49a1737cf9fdcbd65",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Question 2"
+              }
+            },
+            "Property": "Revenue"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "db18a1a23526be146e85",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Question 2"
+              }
+            },
+            "Property": "Expenditures"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "3fbaccec0cf38cf5a7f1",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Question 2"
+              }
+            },
+            "Property": "Net operating result"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "60931468e6241e6fb841",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Ratios"
+              }
+            },
+            "Property": "Net Profit Margin %"
+          }
+        },
+        "type": "Advanced"
+      }
+    ]
+  }
+}

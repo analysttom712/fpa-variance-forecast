@@ -1,0 +1,16 @@
+relationship bceb6bec-85b8-5703-aa03-73145ae6bc28
+	fromColumn: FactFinance.AccountKey
+	toColumn: DimAccount.AccountKey
+
+relationship f88d1ce0-969d-5217-afc7-a096705a8461
+	fromColumn: FactFinance.PeriodEnd
+	toColumn: DimPeriod.PeriodEnd
+
+relationship 5a71ad44-8851-589d-9aba-68bc55d64049
+	fromColumn: FactFinance.OrganizationKey
+	toColumn: DimOrganization.OrganizationKey
+
+relationship 52a48ad6-dfb6-5d5c-9267-a68610a6aa4f
+	fromColumn: FactFinance.DepartmentGroupKey
+	toColumn: DimDepartment.DepartmentGroupKey
+

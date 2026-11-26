@@ -18,11 +18,12 @@ The data is AdventureWorksDW, Microsoft's free sample for a fictional bike manuf
 
 | Path | What it is |
 |---|---|
-| `BI_Project_FPA_2026.pbix` | The Power BI report and model |
+| `BI_Project_FPA_2026.pbix` | The original Power BI report and model, as one file |
+| `pbip/` | The same project as a Power BI Project (PBIP): the model in TMDL and the report pages in JSON, so every table, measure and visual is readable and diffable. It adds the five "Deeper" pages |
 | `dax/fpa-measures.dax` | All 35 DAX measures, exported from the model. Paste into DAX query view and run. |
-| `sql/` | Queries I used to check the shape of `FactFinance` and `DimAccount` before building |
+| `sql/` | SQL Server queries: the two I ran in SSMS to check the shape of `FactFinance` and `DimAccount`, and the source query behind the model's `Query` table |
 | `images/` | Report screenshots |
-| `deeper-model/` | A whole-database analysis: what the original model missed, a tested SQL model, proposed DAX, and a checklist of what to verify and where |
+| `deeper-model/` | A whole-database analysis: what the original model missed, the SQL views and DAX behind the Deeper pages, and a checklist of what to verify and where |
 
 ## What I caught
 
@@ -61,8 +62,9 @@ These fixes are based on the full-database analysis in [deeper-model/](deeper-mo
 ## How to open
 
 1. Restore AdventureWorksDW in SQL Server.
-2. Open `BI_Project_FPA_2026.pbix` in Power BI Desktop.
-3. If the server name differs from mine, go to Transform data > Data source settings, point it at your SQL Server, then refresh.
+2. For the Deeper pages, run `deeper-model/sql/10_model_views.sql` in SSMS (it creates schema `fpa` and adds no data).
+3. Open `pbip/BI_Project_FPA_2026.pbip` (all pages) or `BI_Project_FPA_2026.pbix` (original pages) in Power BI Desktop.
+4. If the server name differs from mine (`localhost\SQLEXPRESS`), go to Transform data > Data source settings, point it at your SQL Server, then refresh.
 
 ## Write-ups
 

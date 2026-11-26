@@ -1,0 +1,65 @@
+table DimOrganization
+	lineageTag: 0dc48643-56be-5a67-849d-26146353f8bd
+
+	column OrganizationKey
+		dataType: int64
+		isHidden
+		lineageTag: e63d6ff5-b14c-541a-8bb6-4be000fb5971
+		summarizeBy: none
+		sourceColumn: OrganizationKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column Organization
+		dataType: string
+		lineageTag: d5092cb8-3188-5bca-b42e-e991c42d93bf
+		summarizeBy: none
+		sourceColumn: Organization
+
+		annotation SummarizationSetBy = Automatic
+
+	column ParentOrganization
+		dataType: string
+		lineageTag: 9a855776-90a4-5047-9e0b-c0a99661e554
+		summarizeBy: none
+		sourceColumn: ParentOrganization
+
+		annotation SummarizationSetBy = Automatic
+
+	column OperatingRegion
+		dataType: string
+		lineageTag: 0fc4b70e-2875-527b-884f-aadc5de46921
+		summarizeBy: none
+		sourceColumn: OperatingRegion
+
+		annotation SummarizationSetBy = Automatic
+
+	column OwnershipPct
+		dataType: double
+		formatString: 0%
+		lineageTag: 704d8bc9-330d-5390-9f5e-01f215c64d1e
+		summarizeBy: none
+		sourceColumn: OwnershipPct
+
+		annotation SummarizationSetBy = Automatic
+
+	column LocalCurrency
+		dataType: string
+		lineageTag: 4ec4be8b-4bdf-5fc8-af26-fa0928c18b38
+		summarizeBy: none
+		sourceColumn: LocalCurrency
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimOrganization = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("localhost\SQLEXPRESS", "AdventureWorksDW2025"),
+				    Data = Source{[Schema = "fpa", Item = "DimOrganization"]}[Data],
+				    Typed = Table.TransformColumns(Data, {{"OwnershipPct", each Number.From(_, "en-US"), type number}, {"LocalCurrency", Text.Trim, type text}})
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table
+

@@ -1,0 +1,107 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "c5f61d3b78a96bf4a5c1",
+  "position": {
+    "x": 397.66990291262135,
+    "y": 385.24271844660194,
+    "z": 0,
+    "height": 351.68932038834953,
+    "width": 1217.8640776699028,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Columns": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Query"
+                    }
+                  },
+                  "Property": "FinanceYear"
+                }
+              },
+              "queryRef": "Query.FinanceYear",
+              "nativeQueryRef": "FinanceYear",
+              "active": true
+            }
+          ]
+        },
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Query"
+                    }
+                  },
+                  "Property": "Expenditure Group"
+                }
+              },
+              "queryRef": "Query.Expenditure Group",
+              "nativeQueryRef": "Expenditure Group",
+              "active": true
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Question 1"
+                    }
+                  },
+                  "Property": "Actual Amount"
+                }
+              },
+              "queryRef": "Question 1.Actual Amount",
+              "nativeQueryRef": "Actual Amount"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Question 2"
+                    }
+                  },
+                  "Property": "Expenditure Share %"
+                }
+              },
+              "queryRef": "Question 2.Expenditure Share %",
+              "nativeQueryRef": "Expenditure Share %"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Question 2"
+                  }
+                },
+                "Property": "Expenditure Share %"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

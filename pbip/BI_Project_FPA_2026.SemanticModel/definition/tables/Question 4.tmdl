@@ -1,0 +1,171 @@
+table 'Question 4'
+	lineageTag: 0316ed80-c8f2-407c-8f5a-7757967d1e5a
+
+	measure 'Standard Cost of Sales' =
+			
+			CALCULATE(
+			    SUM(Query[TotalAmount]),
+			    Query[AccountDescription] = "Standard Cost of Sales",
+			    Query[ScenarioName] = "Actual"
+			)
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: b86cf880-543d-43c6-b777-b3c06e7dc1f9
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Gross Profit Margin %' =
+			
+			DIVIDE(
+			    [Revenue] - [Standard Cost of Sales],
+			    [Revenue]
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 67352d6f-1eba-45ff-bf11-2cce91fb0f3a
+
+	measure 'Nov Balance' =
+			
+			CALCULATE(
+			    SUM(Query[TotalAmount]),
+			    Query[MonthNum] = 11,
+			    Query[ScenarioName] = "Actual"
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 16d78dd4-3f31-4968-957f-4eb0c8731c8d
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Current Assets' =
+			
+			CALCULATE(
+			    [Nov Balance],
+			    Query[AccountDescription] IN {
+			        "Cash",
+			        "Trade Receivables",
+			        "Other Receivables",
+			        "Finished Goods",
+			        "Raw Materials",
+			        "Work in Process",
+			        "Prepaid Expenses",
+			        "Intercompany Receivables"
+			    }
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: fc91ecde-356e-4497-8df5-7dc7a75ed372
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Current Liabilities' =
+			
+			CALCULATE(
+			    [Nov Balance],
+			    Query[AccountDescription] IN {
+			        "Accounts Payable",
+			        "Other Current Liabilities",
+			        "Current Installments of Long-term Debt",
+			        "Notes Payable",
+			        "Intercompany Payables"
+			    }
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: 00fd6d24-251e-435d-bf48-b74c8082939c
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Quick Assets' =
+			
+			CALCULATE(
+			    [Nov Balance],
+			    Query[AccountDescription] IN {
+			        "Cash",
+			        "Trade Receivables",
+			        "Other Receivables"
+			    }
+			)
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		lineageTag: a409037f-ce3c-4350-9ddb-9461593fdf7b
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Inventory Balance' =
+			
+			CALCULATE(
+			    [Nov Balance],
+			    Query[AccountDescription] IN {
+			        "Finished Goods",
+			        "Raw Materials",
+			        "Work in Process"
+			    }
+			)
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 48a93da6-8785-4b20-990f-8fc9e54bbfc2
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Trade Receivables Balance' =
+			
+			CALCULATE(
+			    [Nov Balance],
+			    Query[AccountDescription] = "Trade Receivables"
+			)
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 3c3c2c36-fcd8-4c16-90fd-31644419d083
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Current Ratio' =
+			
+			DIVIDE(
+			    [Current Assets],
+			    [Current Liabilities]
+			)
+		lineageTag: 0a8b425c-0f27-46c4-bf97-6ff84f272c58
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Quick Ratio' =
+			
+			DIVIDE(
+			    [Quick Assets],
+			    [Current Liabilities]
+			)
+		lineageTag: 339848bd-841d-4c0d-84dd-5569e0e5b7f9
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Receivables Turnover' =
+			
+			DIVIDE(
+			    [Revenue],
+			    [Trade Receivables Balance]
+			)
+		lineageTag: fa17de82-c8e1-49cd-9fb5-f860262a80c9
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	measure 'Inventory Turnover' =
+			
+			DIVIDE(
+			    [Standard Cost of Sales],
+			    [Inventory Balance]
+			)
+		lineageTag: 28e425f9-69ad-46b7-8403-7819efd416da
+
+		annotation PBI_FormatHint = {"isGeneralNumber":true}
+
+	column Column
+		formatString: 0
+		lineageTag: 0f6ea2a0-9884-4792-a4b9-f45488d3e22a
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Column]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Question 4' = calculated
+		mode: import
+		source = Row("Column", BLANK())
+
+	annotation PBI_Id = d17a3cc019c24ba1abb7ab43b41ae74b
+
+	annotation 436ba87b-9c83-4389-a31b-ebd06a36be98 = {"Expression":""}
+

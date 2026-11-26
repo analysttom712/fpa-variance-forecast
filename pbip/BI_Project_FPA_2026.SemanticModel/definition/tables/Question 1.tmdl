@@ -1,0 +1,158 @@
+table 'Question 1'
+	lineageTag: b1f03552-8ad6-4edf-8312-8a39a7655669
+
+	measure 'Actual Amount' = ```
+			
+			 CALCULATE(
+			    SUM(Query[TotalAmount]),
+			    Query[ScenarioName] = "Actual")
+			```
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: f61e9d5a-7ed8-4fd8-af99-5533955478f8
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Budget Amount' = ```
+			
+			 CALCULATE(
+			    SUM(Query[TotalAmount]),
+			    Query[ScenarioName] = "Budget")
+			```
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 69e7e655-4a51-45db-950d-d1b7c33c2c2e
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure Variance = [Comparable Actual] - [Budget Amount]
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 0265e502-218e-4f72-a493-d7045209ab31
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure Variance% =
+			
+			DIVIDE([Variance],[Budget Amount],Blank())
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: ad024713-4e00-4291-aa4a-824a2614653a
+
+	measure 'Two Years Prior Actual' =
+			
+			VAR CurrentYear = MAX(Query[FinanceYear])
+			RETURN
+			CALCULATE(
+			    [Actual Amount],
+			    Query[FinanceYear] = CurrentYear - 2
+			)
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 4da2d9fc-6ef5-499e-b16c-b5c42a1625d5
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'YoY Growth %' =
+			
+			DIVIDE(
+			[Actual Amount] - [Prior Year Actual],
+			[Prior Year Actual],
+			0
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: c3140877-89b1-4643-aa77-60f803ba3bfa
+
+	measure 'Forecast Amount' =
+			
+			IF(
+			    ISBLANK([Two Years Prior Actual]),
+			    BLANK(),
+			    [Prior Year Actual] + [Prior Year Change]
+			)
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 79dd1e55-ad56-42c2-b659-ac2bf5d6b972
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Prior Year Change' =
+			
+			[Prior Year Actual] - [Two Years Prior Actual]
+		lineageTag: 2b8fbe53-7f7f-4aa5-9db0-723327805762
+
+	measure 'Prior Year Actual' =
+			
+			VAR CurrentYear = MAX(Query[FinanceYear])
+			RETURN
+			CALCULATE(
+			    [Actual Amount],
+			    Query[FinanceYear] = CurrentYear - 1
+			)
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 9508545a-fe36-447a-9383-37d6e743e2ed
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Comparable Actual' =
+			
+			SUMX(
+			    VALUES(Query[FinanceYear]),
+			    IF(NOT ISBLANK([Budget Amount]), [Actual Amount])
+			)
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 0a54c870-8607-45a5-9e03-8f7cf76fd395
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Original Variance' = [Actual Amount] - [Budget Amount]
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 1e81f9c1-8728-40f0-878c-4cd10dfec8e0
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Original Variance%' =
+			
+			DIVIDE([Original Variance],[Budget Amount],Blank())
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 5615221a-67b3-466b-b2ea-2ce42de13d77
+
+	measure 'Forecast Error %' =
+			
+			VAR f = [Forecast Amount]
+			RETURN
+			    IF(
+			        f = 0,
+			        BLANK(),
+			        DIVIDE(f - [Actual Amount], [Actual Amount])
+			    )
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: ee7fd611-1bd4-4dcb-abd6-39fe68f8833b
+
+	measure 'Generated Budget' =
+			
+			VAR PriorActual = [Prior Year Actual]
+			VAR GrowthRate = 0.10
+			RETURN
+			    IF(
+			        PriorActual = 0,
+			        BLANK(),
+			        PriorActual * (1 + GrowthRate)
+			    )
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 403e1f7d-d71d-4c20-8f0b-5fe4a0ad7e31
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	column Column
+		isHidden
+		formatString: 0
+		lineageTag: 4f1a6e74-b9a2-43e6-8cdb-69b29b8579fd
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Column]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Question 1' = calculated
+		mode: import
+		source = Row("Column", BLANK())
+
+	annotation PBI_Id = bd01e810f09447bba208e175ceb487d1
+
+	annotation 436ba87b-9c83-4389-a31b-ebd06a36be98 = {"Expression":""}
+

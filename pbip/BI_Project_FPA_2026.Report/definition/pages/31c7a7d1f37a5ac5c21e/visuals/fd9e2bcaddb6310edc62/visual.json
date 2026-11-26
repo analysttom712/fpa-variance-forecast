@@ -1,0 +1,145 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "fd9e2bcaddb6310edc62",
+  "position": {
+    "x": 0,
+    "y": 0,
+    "z": 1001,
+    "height": 913.42011834319521,
+    "width": 639.62130177514791,
+    "tabOrder": 1001
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Query"
+                    }
+                  },
+                  "Property": "Expenditure Group"
+                }
+              },
+              "queryRef": "Query.Expenditure Group",
+              "nativeQueryRef": "Expenditure Group",
+              "active": true
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Question 1"
+                    }
+                  },
+                  "Property": "Generated Budget"
+                }
+              },
+              "queryRef": "Question 1.Generated Budget",
+              "nativeQueryRef": "Generated Budget"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Question 1"
+                    }
+                  },
+                  "Property": "Actual Amount"
+                }
+              },
+              "queryRef": "Question 1.Actual Amount",
+              "nativeQueryRef": "Actual Amount"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Question 1"
+                    }
+                  },
+                  "Property": "Forecast Error %"
+                }
+              },
+              "queryRef": "Question 1.Forecast Error %",
+              "nativeQueryRef": "Forecast Error %"
+            }
+          ]
+        }
+      }
+    },
+    "drillFilterOtherVisuals": true
+  },
+  "filterConfig": {
+    "filters": [
+      {
+        "name": "f531ed9a9181b808bb2f",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Question 1"
+              }
+            },
+            "Property": "Actual Amount"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "5d9cff3ea780455e4d47",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Question 1"
+              }
+            },
+            "Property": "Forecast Error %"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "6a2100a2aa715516e577",
+        "field": {
+          "Measure": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Question 1"
+              }
+            },
+            "Property": "Generated Budget"
+          }
+        },
+        "type": "Advanced"
+      },
+      {
+        "name": "ea15ad724878c6daff38",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Query"
+              }
+            },
+            "Property": "Expenditure Group"
+          }
+        },
+        "type": "Categorical"
+      }
+    ]
+  }
+}

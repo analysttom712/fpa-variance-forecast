@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "BI_Project_FPA_2026"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "3521470e-90ee-4fa0-b2f6-932d9ab70dfe"
+  }
+}

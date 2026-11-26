@@ -1,0 +1,322 @@
+table FactFinance
+	lineageTag: 91887fad-942c-5547-a331-0d5d686c0ac9
+
+	measure 'Actual USD' = CALCULATE ( SUM ( FactFinance[AmountUSD] ), FactFinance[Scenario] = "Actual" )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 0 Base
+		lineageTag: f084d82d-6c9e-5236-b303-17a7797d6410
+
+	measure 'Budget USD' = CALCULATE ( SUM ( FactFinance[AmountUSD] ), FactFinance[Scenario] = "Budget" )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 0 Base
+		lineageTag: 2699a071-31ca-589b-8bb2-179d8d98ab56
+
+	measure 'Gross Sales' = CALCULATE ( [Actual USD], DimAccount[StatementLine] = "1 Gross sales" )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 1 P&L
+		lineageTag: ccbddf1e-e1b5-5143-a1d3-7b83e9b4a306
+
+	measure 'Intercompany Sales' = CALCULATE ( [Actual USD], DimAccount[StatementLine] = "2 Intercompany sales (eliminate)" )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 1 P&L
+		lineageTag: 27a4ff37-b362-5e23-9f96-8a51672873de
+
+	measure 'Returns and Discounts' = CALCULATE ( [Actual USD], DimAccount[StatementLine] = "3 Returns and discounts" )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 1 P&L
+		lineageTag: 44612de3-7675-5134-9728-75db95ed4b05
+
+	measure 'Net Sales' = [Gross Sales] - [Returns and Discounts]
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 1 P&L
+		lineageTag: 69b5efed-5369-5fbf-80dc-45de9f269c93
+
+	measure 'Cost of Sales' = CALCULATE ( [Actual USD], DimAccount[StatementLine] = "4 Cost of sales" )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 1 P&L
+		lineageTag: 4b62a441-ca34-554c-9daf-dcfc50f86d86
+
+	measure 'Gross Margin' = [Net Sales] - [Cost of Sales]
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 1 P&L
+		lineageTag: 6e0b5dce-cd06-55c9-a29f-2019a8b1603e
+
+	measure 'Gross Margin %' = DIVIDE ( [Gross Margin], [Net Sales] )
+		formatString: 0.00%
+		displayFolder: 1 P&L
+		lineageTag: 2a02764b-5b5f-5ec3-a271-a18501b700ff
+
+	measure 'Operating Expenses' = CALCULATE ( [Actual USD], DimAccount[StatementLine] = "5 Operating expenses" )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 1 P&L
+		lineageTag: bc119372-8076-527e-aa95-c54cd448be3a
+
+	measure 'Operating Profit' = [Gross Margin] - [Operating Expenses]
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 1 P&L
+		lineageTag: ac35b73f-26e4-5790-b070-e881694cba00
+
+	measure 'Operating Margin %' = DIVIDE ( [Operating Profit], [Net Sales] )
+		formatString: 0.00%
+		displayFolder: 1 P&L
+		lineageTag: 749d97d7-9cb6-567a-9b90-cd268d7168a9
+
+	measure 'Other Income Net' =
+			CALCULATE (
+			    SUMX ( FactFinance, FactFinance[AmountUSD] * RELATED ( DimAccount[ProfitSign] ) ),
+			    FactFinance[Scenario] = "Actual",
+			    DimAccount[StatementLine] = "6 Other income and expense"
+			)
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 1 P&L
+		lineageTag: 6cbc41af-1bc8-5f44-9827-1c8b6a6acecc
+
+	measure Taxes = CALCULATE ( [Actual USD], DimAccount[StatementLine] = "7 Taxes" )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 1 P&L
+		lineageTag: 5cba3090-b53a-556c-b1c1-517a0e73f4dd
+
+	measure 'Net Income' = [Operating Profit] + [Other Income Net] - [Taxes]
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 1 P&L
+		lineageTag: f29a654b-f4fe-5a30-82b9-6d441406397a
+
+	measure 'Net Margin %' = DIVIDE ( [Net Income], [Net Sales] )
+		formatString: 0.00%
+		displayFolder: 1 P&L
+		lineageTag: 43b0f06b-42c0-5e73-828d-8e541331a80e
+
+	measure 'OpEx % of Net Sales' = DIVIDE ( [Operating Expenses], [Net Sales] )
+		formatString: 0.00%
+		displayFolder: 1 P&L
+		lineageTag: 6c99e3f3-d048-51e1-9c8a-1faaa8746e02
+
+	measure 'Net Sales PY' =
+			VAR y = MAX ( DimPeriod[FiscalYear] )
+			RETURN CALCULATE ( [Net Sales], DimPeriod[FiscalYear] = y - 1 )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 2 Growth
+		lineageTag: 56690637-dad0-5d9a-a13e-8c052bbabae9
+
+	measure 'Operating Expenses PY' =
+			VAR y = MAX ( DimPeriod[FiscalYear] )
+			RETURN CALCULATE ( [Operating Expenses], DimPeriod[FiscalYear] = y - 1 )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 2 Growth
+		lineageTag: 22999c2f-d6d6-508c-8064-e34654e72dbe
+
+	measure 'Net Sales Growth %' = DIVIDE ( [Net Sales] - [Net Sales PY], [Net Sales PY] )
+		formatString: 0.00%
+		displayFolder: 2 Growth
+		lineageTag: 7ce42e64-1c01-554f-b5df-797eecf2cfe6
+
+	measure 'OpEx Growth %' = DIVIDE ( [Operating Expenses] - [Operating Expenses PY], [Operating Expenses PY] )
+		formatString: 0.00%
+		displayFolder: 2 Growth
+		lineageTag: 185326cb-721f-53b8-b5ba-08db6425de54
+
+	measure Headcount =
+			VAR LastPeriod =
+			    CALCULATE (
+			        MAX ( FactFinance[PeriodEnd] ),
+			        DimAccount[AccountCode] = 9510,
+			        FactFinance[Scenario] = "Actual"
+			    )
+			RETURN
+			    CALCULATE (
+			        SUM ( FactFinance[AmountLocal] ),
+			        DimAccount[AccountCode] = 9510,
+			        FactFinance[Scenario] = "Actual",
+			        DimPeriod[PeriodEnd] = LastPeriod
+			    )
+		formatString: #,0
+		displayFolder: 3 Headcount
+		lineageTag: 33cf144b-3c28-564a-8a76-05e8b1849479
+
+	measure 'OpEx per Head' = DIVIDE ( [Operating Expenses], [Headcount] )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 3 Headcount
+		lineageTag: 4dc3bddb-128a-58ae-a2cc-5511d40a7938
+
+	measure 'Comparable Actual USD' =
+			SUMX (
+			    SUMMARIZE ( FactFinance, FactFinance[AccountKey], FactFinance[PeriodEnd], FactFinance[OrganizationKey] ),
+			    IF ( NOT ISBLANK ( [Budget USD] ), [Actual USD] )
+			)
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 4 Budget
+		lineageTag: cdbe8b19-66ae-5999-9c78-8c762f9a7d60
+
+	measure 'Budget Variance' = [Comparable Actual USD] - [Budget USD]
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 4 Budget
+		lineageTag: 672b78cd-f98d-5ce6-b6d2-d5f66079df82
+
+	measure 'Budget Variance (favorable +)' =
+			SUMX (
+			    VALUES ( DimAccount[AccountKey] ),
+			    ( [Comparable Actual USD] - [Budget USD] ) * CALCULATE ( MAX ( DimAccount[ProfitSign] ) )
+			)
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 4 Budget
+		lineageTag: 52099898-e299-5895-a2cc-b36015037613
+
+	measure 'Budget Variance %' = DIVIDE ( [Budget Variance], [Budget USD] )
+		formatString: 0.00%
+		displayFolder: 4 Budget
+		lineageTag: 84c433c2-3f4c-5acf-9f9a-eacdfbc46d37
+
+	measure 'Balance USD' =
+			VAR LastPeriod =
+			    CALCULATE (
+			        MAX ( FactFinance[PeriodEnd] ),
+			        DimAccount[StatementLine] = "Balance sheet",
+			        FactFinance[Scenario] = "Actual"
+			    )
+			RETURN
+			    CALCULATE (
+			        [Actual USD],
+			        DimAccount[StatementLine] = "Balance sheet",
+			        DimPeriod[PeriodEnd] = LastPeriod
+			    )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 5 Balance sheet
+		lineageTag: 94a1ec9d-8238-5d64-bd59-326b762f4b79
+
+	measure 'Check Rows Loaded' = COUNTROWS ( FactFinance )
+		formatString: #,0
+		displayFolder: 9 Checks
+		lineageTag: 6c1b0e9e-a893-5935-8dd2-8d8c5b2d9eab
+
+	measure 'Check Missing Rates' = SUM ( FactFinance[MissingRate] ) + 0
+		formatString: #,0
+		displayFolder: 9 Checks
+		lineageTag: efe93316-a92d-565c-8ded-2816ba54f9a9
+
+	measure 'Check Balance Sheet Off' =
+			SUMX (
+			    VALUES ( DimPeriod[PeriodEnd] ),
+			    VAR Diff =
+			        CALCULATE ( SUM ( FactFinance[AmountLocal] ), DimAccount[AccountType] = "Assets", FactFinance[Scenario] = "Actual" )
+			            - CALCULATE ( SUM ( FactFinance[AmountLocal] ), DimAccount[AccountType] = "Liabilities", FactFinance[Scenario] = "Actual" )
+			    RETURN IF ( ABS ( Diff ) > 1, 1, 0 )
+			)
+		formatString: #,0
+		displayFolder: 9 Checks
+		lineageTag: 88278f7d-440b-55e1-ba34-3e32252b61ec
+
+	measure 'Check Periods Per Year' = DISTINCTCOUNT ( DimPeriod[FiscalMonth] )
+		formatString: #,0
+		displayFolder: 9 Checks
+		lineageTag: ec10f521-c1da-5d49-b13e-ca6c0860d1b0
+
+	column FinanceKey
+		dataType: int64
+		isHidden
+		lineageTag: e3eab299-5484-50c1-9450-dc539a5618ac
+		summarizeBy: none
+		sourceColumn: FinanceKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column ScenarioKey
+		dataType: int64
+		isHidden
+		lineageTag: 8d9792ff-7f9b-5332-b9d3-5afa12a5a455
+		summarizeBy: none
+		sourceColumn: ScenarioKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column Scenario
+		dataType: string
+		lineageTag: ff6978c7-7164-59f9-ad18-1cf60eff5e7e
+		summarizeBy: none
+		sourceColumn: Scenario
+
+		annotation SummarizationSetBy = Automatic
+
+	column AccountKey
+		dataType: int64
+		isHidden
+		lineageTag: f3364f4a-cf05-5c60-887e-284e67bf67ec
+		summarizeBy: none
+		sourceColumn: AccountKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column OrganizationKey
+		dataType: int64
+		isHidden
+		lineageTag: 08802e87-16e8-54b0-aa48-30dfd2a6562f
+		summarizeBy: none
+		sourceColumn: OrganizationKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column DepartmentGroupKey
+		dataType: int64
+		isHidden
+		lineageTag: 45934013-4959-5402-a029-e1fe8442e2b0
+		summarizeBy: none
+		sourceColumn: DepartmentGroupKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column PostingDate
+		dataType: dateTime
+		formatString: m/d/yyyy
+		lineageTag: 5beb5f9e-c3c4-59ac-9adf-1ad457afe057
+		summarizeBy: none
+		sourceColumn: PostingDate
+
+		annotation SummarizationSetBy = Automatic
+
+	column PeriodEnd
+		dataType: dateTime
+		isHidden
+		formatString: m/d/yyyy
+		lineageTag: 5d623673-0bb3-5d33-9099-0ca2819c41ad
+		summarizeBy: none
+		sourceColumn: PeriodEnd
+
+		annotation SummarizationSetBy = Automatic
+
+	column AmountLocal
+		dataType: decimal
+		formatString: #,0.00
+		lineageTag: 427e8f2f-4c10-5aaa-9cd9-5d72cf9a529f
+		summarizeBy: sum
+		sourceColumn: AmountLocal
+
+		annotation SummarizationSetBy = Automatic
+
+	column AmountUSD
+		dataType: decimal
+		formatString: \$#,0;(\$#,0);\$#,0
+		lineageTag: c716bac6-4b7c-5d61-a21f-e301d861b4ad
+		summarizeBy: sum
+		sourceColumn: AmountUSD
+
+		annotation SummarizationSetBy = Automatic
+
+	column MissingRate
+		dataType: int64
+		isHidden
+		lineageTag: e8cd22a5-69fc-54b9-bc64-a19ce437bc01
+		summarizeBy: none
+		sourceColumn: MissingRate
+
+		annotation SummarizationSetBy = Automatic
+
+	partition FactFinance = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("localhost\SQLEXPRESS", "AdventureWorksDW2025"),
+				    Data = Source{[Schema = "fpa", Item = "FactFinance"]}[Data]
+				in
+				    Data
+
+	annotation PBI_ResultType = Table
+

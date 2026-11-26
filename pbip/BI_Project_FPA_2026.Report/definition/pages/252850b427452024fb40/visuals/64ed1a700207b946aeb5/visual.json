@@ -1,0 +1,159 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
+  "name": "64ed1a700207b946aeb5",
+  "position": {
+    "x": -1.0333692142088267,
+    "y": 0,
+    "z": 0,
+    "height": 201.50699677072123,
+    "width": 892.83100107642633,
+    "tabOrder": 0
+  },
+  "visual": {
+    "visualType": "pivotTable",
+    "query": {
+      "queryState": {
+        "Rows": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Query"
+                    }
+                  },
+                  "Property": "FinanceYear"
+                }
+              },
+              "queryRef": "Query.FinanceYear",
+              "nativeQueryRef": "FinanceYear",
+              "active": true
+            }
+          ]
+        },
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Question 4"
+                    }
+                  },
+                  "Property": "Nov Balance"
+                }
+              },
+              "queryRef": "Question 4.Nov Balance",
+              "nativeQueryRef": "Nov Balance"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Question 4"
+                    }
+                  },
+                  "Property": "Current Assets"
+                }
+              },
+              "queryRef": "Question 4.Current Assets",
+              "nativeQueryRef": "Current Assets"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Question 4"
+                    }
+                  },
+                  "Property": "Current Liabilities"
+                }
+              },
+              "queryRef": "Question 4.Current Liabilities",
+              "nativeQueryRef": "Current Liabilities"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Question 4"
+                    }
+                  },
+                  "Property": "Quick Assets"
+                }
+              },
+              "queryRef": "Question 4.Quick Assets",
+              "nativeQueryRef": "Quick Assets"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Question 4"
+                    }
+                  },
+                  "Property": "Inventory Balance"
+                }
+              },
+              "queryRef": "Question 4.Inventory Balance",
+              "nativeQueryRef": "Inventory Balance"
+            },
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Question 4"
+                    }
+                  },
+                  "Property": "Trade Receivables Balance"
+                }
+              },
+              "queryRef": "Question 4.Trade Receivables Balance",
+              "nativeQueryRef": "Trade Receivables Balance"
+            }
+          ]
+        }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Question 4"
+                  }
+                },
+                "Property": "Trade Receivables Balance"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
+      }
+    },
+    "visualContainerObjects": {
+      "stylePreset": [
+        {
+          "properties": {
+            "name": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Condensed'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "drillFilterOtherVisuals": true
+  }
+}

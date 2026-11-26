@@ -1,0 +1,31 @@
+table DimDepartment
+	lineageTag: 376971ed-5418-56d4-a4de-312e65ed09d7
+
+	column DepartmentGroupKey
+		dataType: int64
+		isHidden
+		lineageTag: 25d45c58-fe00-5f13-addb-da1a9aaa0b98
+		summarizeBy: none
+		sourceColumn: DepartmentGroupKey
+
+		annotation SummarizationSetBy = Automatic
+
+	column Department
+		dataType: string
+		lineageTag: ad3d6bae-9fa7-560b-b971-0efc01d109a7
+		summarizeBy: none
+		sourceColumn: Department
+
+		annotation SummarizationSetBy = Automatic
+
+	partition DimDepartment = m
+		mode: import
+		source =
+				let
+				    Source = Sql.Database("localhost\SQLEXPRESS", "AdventureWorksDW2025"),
+				    Data = Source{[Schema = "fpa", Item = "DimDepartment"]}[Data]
+				in
+				    Data
+
+	annotation PBI_ResultType = Table
+

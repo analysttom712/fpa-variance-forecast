@@ -1,0 +1,27 @@
+table Ratios
+	lineageTag: e1d5e8a3-aa84-43df-9832-bc389085f1b1
+
+	measure 'Net Profit Margin %' =
+			
+			DIVIDE([Net operating result], [Revenue])
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: ce434dfd-ce36-4928-9f17-4d9e080587be
+
+	column Column
+		isHidden
+		formatString: 0
+		lineageTag: f2ab91c4-0ab1-44bc-b50e-0fae00dc70ef
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Column]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition Ratios = calculated
+		mode: import
+		source = Row("Column", BLANK())
+
+	annotation PBI_Id = 1c5f5933d2ea4402b68f0c39bfd4480a
+
+	annotation 436ba87b-9c83-4389-a31b-ebd06a36be98 = {"Expression":""}
+

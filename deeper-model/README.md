@@ -1,8 +1,8 @@
 # A deeper model: analyzing the whole database first
 
-The original dashboard reads one grouped query, `FactFinance` joined to `DimAccount` and `DimScenario`. This folder shows what changes when you profile the **whole** AdventureWorksDW database before modeling. The profiling turned up problems that change the answers. It also leads to a proposed model that fixes them, and to a checklist of what to verify and where to look.
+The original dashboard reads one grouped query, `FactFinance` joined to `DimAccount` and `DimScenario`. This folder shows what changes when you profile the **whole** AdventureWorksDW database before modeling. The profiling turned up problems that change the answers. It also led to a rebuilt model that fixes them, now in the Power BI project, and to a checklist of what to verify and where to look.
 
-The analysis was done by Claude (AI) at my direction. Every query ran against my local SQL Server copy of AdventureWorksDW2025, and the numbers below come from those runs. The views in `sql/10_model_views.sql` were tested inside a rolled-back transaction, so nothing was left in the database. **The Power BI model itself isn't built yet.** `measures.dax` is the proposed DAX, and the checklist at the end is how to confirm it once it's built.
+The analysis was done by Claude (AI) at my direction. Every query ran against my local SQL Server copy of AdventureWorksDW2025, and the numbers below come from those runs. The views in `sql/10_model_views.sql` are created in schema `fpa` and add no data. The model is built in [`../pbip/`](../pbip/) as five pages named "Deeper 1" to "Deeper 5". `measures.dax` is exported from that model. Its results were checked against SQL Server and match to the dollar (see the checklist at the end).
 
 ## How the database was analyzed
 
@@ -13,7 +13,7 @@ The analysis was done by Claude (AI) at my direction. Every query ran against my
 | 3. Explain the oddities | Why do months repeat or go missing? Which profit lines are added and which are subtracted? | `sql/03_posting_dates_and_signs.sql` |
 | 4. Rebuild the answer | What is the P&L in one currency, net of returns, with intercompany taken out? How far is it from what the dashboard shows? | `sql/04_corrected_pnl.sql` |
 | 5. Find the drivers | What is pulling the margin down, and how did 2011 do against budget on a like-for-like basis? | `sql/05_cost_drivers_and_budget.sql` |
-| 6. Propose the model | Five views that fix what steps 2 and 3 found | `sql/10_model_views.sql` |
+| 6. Build the model | Five views that fix what steps 2 and 3 found | `sql/10_model_views.sql` |
 
 ## What the database has that the dashboard doesn't use
 
@@ -60,7 +60,7 @@ The original direction holds: margin is falling. But the corrected view shows wh
 - By organization in 2013, Southwest earns a 36.1% operating margin. Southeast loses money (-8.0%, -$202,557). Northeast (1.5%) and Australia (5.0%) barely break even.
 - Against budget in 2011, on budgeted accounts and months only, revenue came in 9.7% under ($20.33M against $22.50M) and expenses 2.4% under.
 
-## The proposed model
+## The model
 
 Five views (`sql/10_model_views.sql`) replace the single grouped query:
 
@@ -70,21 +70,32 @@ Five views (`sql/10_model_views.sql`) replace the single grouped query:
 - **DimOrganization:** organization, parent, operating region, ownership % and currency
 - **DimDepartment:** department name
 
-Suggested pages:
+The five pages in the Power BI project:
 
-1. **P&L:** net sales down to net income, as a waterfall, in USD
-2. **Margin bridge 2011 to 2013:** gross margin against operating expense growth
-3. **Organizations and departments:** operating margin by organization, operating expenses by department, cost per head
-4. **Budget vs actual:** 2011 only, comparable cells only, favorable or unfavorable
-5. **Balance sheet and ratios:** period-end balances in USD, current and quick ratios
-6. **Checks:** the check measures in `measures.dax`
+| Page | Shows |
+|---|---|
+| Deeper 1: P&L in USD | Net sales down to net income, January to November each year; sales against operating expenses; growth |
+| Deeper 2: Organizations | 2013 operating margin by organization, with currency and ownership % |
+| Deeper 3: Cost drivers | Operating expenses by department and by account; expenses against headcount |
+| Deeper 4: Budget vs actual 2011 | Only cells where a budget exists, with a favorable/unfavorable sign |
+| Deeper 5: Data checks | Rows loaded, missing rates, balance sheet check, rows per period |
 
-To build it:
-1. Run `sql/10_model_views.sql` in SSMS. It creates schema `fpa` and adds no data.
-2. In Power BI, use Get data > SQL Server and import the five `fpa` views.
-3. Create the four relationships listed at the top of `measures.dax`.
-4. Paste the measures.
+![P&L in USD](../images/deeper-1-pnl.jpg)
 
+![Operating margin by organization, 2013](../images/deeper-2-organizations.jpg)
+
+![Operating expenses by department and account](../images/deeper-3-cost-drivers.jpg)
+
+![Budget vs actual, 2011](../images/deeper-4-budget.jpg)
+
+![Data checks](../images/deeper-5-checks.jpg)
+
+To rebuild it on your machine:
+1. Restore AdventureWorksDW2025 and run `sql/10_model_views.sql` in SSMS. It creates schema `fpa` and adds no data.
+2. Open `pbip/BI_Project_FPA_2026.pbip` in Power BI Desktop. If your server isn't `localhost\SQLEXPRESS`, change it under Transform data > Data source settings.
+3. Refresh, then check the Deeper 5 page before reading the others.
+
+Not built yet: a waterfall P&L, and a balance sheet and ratios page in USD.
 ## What you should check, and where
 
 | # | Check | Expected | Where to look |
@@ -99,7 +110,7 @@ To build it:
 | 8 | Corporate isn't a total of the others | Corporate differs from the sum of the other departments | SSMS: `03_posting_dates_and_signs.sql`, Corporate vs children |
 | 9 | Ownership treatment | Your decision | DimOrganization[OwnershipPct]. Write down which method the report uses |
 | 10 | Intercompany | Sales eliminated. Receivables and payables don't offset (13.4M vs 4.7M) | Step 2 intercompany query. Decide whether to show balances gross |
-| 11 | Budget coverage | 28 accounts, Dec 2010 and Jan to Nov 2011 | Budget page: Comparable Actual is blank wherever no budget exists |
+| 11 | Budget coverage | 28 accounts, Dec 2010 and Jan to Nov 2011 | Budget page: Comparable Actual USD is blank wherever no budget exists |
 | 12 | Sales tables vs finance | They don't tie yet | Step 2, last query. Reconcile before adding a sales page |
 
 If any check fails, fix it before reading the pages. The pages are only as right as the checks.

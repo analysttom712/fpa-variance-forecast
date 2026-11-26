@@ -1,0 +1,71 @@
+DEFINE
+    MEASURE 'Question 1'[Actual Amount] = CALCULATE(
+    SUM(Query[TotalAmount]),
+    Query[ScenarioName] = "Actual")
+    MEASURE 'Question 1'[Budget Amount] = CALCULATE(
+    SUM(Query[TotalAmount]),
+    Query[ScenarioName] = "Budget")
+    MEASURE 'Question 1'[Variance] = [Comparable Actual] - [Budget Amount]
+    MEASURE 'Question 1'[Variance%] = DIVIDE([Variance],[Budget Amount],Blank())
+    MEASURE 'Question 1'[Two Years Prior Actual] = VAR CurrentYear = MAX(Query[FinanceYear])
+RETURN
+CALCULATE(
+    [Actual Amount],
+    Query[FinanceYear] = CurrentYear - 2
+)
+    MEASURE 'Question 1'[YoY Growth %] = DIVIDE(
+[Actual Amount] - [Prior Year Actual],
+[Prior Year Actual],
+0
+)
+    MEASURE 'Question 1'[Forecast Amount] = IF(
+    ISBLANK([Two Years Prior Actual]),
+    BLANK(),
+    [Prior Year Actual] + [Prior Year Change]
+)
+    MEASURE 'Question 1'[Prior Year Change] = [Prior Year Actual] - [Two Years Prior Actual]
+    MEASURE 'Question 1'[Prior Year Actual] = VAR CurrentYear = MAX(Query[FinanceYear])
+RETURN
+CALCULATE(
+    [Actual Amount],
+    Query[FinanceYear] = CurrentYear - 1
+)
+    MEASURE 'Question 1'[Comparable Actual] = SUMX(
+    VALUES(Query[FinanceYear]),
+    IF(NOT ISBLANK([Budget Amount]), [Actual Amount])
+)
+    MEASURE 'Question 1'[Original Variance] = [Actual Amount] - [Budget Amount]
+    MEASURE 'Question 1'[Original Variance%] = DIVIDE([Original Variance],[Budget Amount],Blank())
+    MEASURE 'Question 1'[Forecast Error %] = VAR f = [Forecast Amount]
+RETURN
+    IF(
+        f = 0,
+        BLANK(),
+        DIVIDE(f - [Actual Amount], [Actual Amount])
+    )
+    MEASURE 'Question 1'[Generated Budget] = VAR PriorActual = [Prior Year Actual]
+VAR GrowthRate = 0.10
+RETURN
+    IF(
+        PriorActual = 0,
+        BLANK(),
+        PriorActual * (1 + GrowthRate)
+    )
+
+EVALUATE
+    SUMMARIZECOLUMNS(
+        "Actual Amount", [Actual Amount],
+        "Budget Amount", [Budget Amount],
+        "Variance", [Variance],
+        "Variance%", [Variance%],
+        "Two Years Prior Actual", [Two Years Prior Actual],
+        "YoY Growth %", [YoY Growth %],
+        "Forecast Amount", [Forecast Amount],
+        "Prior Year Change", [Prior Year Change],
+        "Prior Year Actual", [Prior Year Actual],
+        "Comparable Actual", [Comparable Actual],
+        "Original Variance", [Original Variance],
+        "Original Variance%", [Original Variance%],
+        "Forecast Error %", [Forecast Error %],
+        "Generated Budget", [Generated Budget]
+    )

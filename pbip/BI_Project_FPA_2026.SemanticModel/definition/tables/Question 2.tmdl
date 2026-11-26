@@ -1,0 +1,107 @@
+table 'Question 2'
+	lineageTag: bb96c8df-9ce9-4841-b08c-2f7f7513d017
+
+	measure Revenue = ```
+			
+			 CALCULATE(
+			    SUM(Query[TotalAmount]),
+			    Query[ScenarioName] = "Actual", Query[AccountType] = "Revenue")
+			```
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: b2977eec-9f51-4d47-80fc-7bc2ddd8aed4
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure Expenditures = ```
+			
+			 CALCULATE(
+			    SUM(Query[TotalAmount]),
+			    Query[ScenarioName] = "Actual", Query[AccountType] = "Expenditures")
+			```
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 04b88d96-0b19-4ace-a996-b12e0a26623b
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Net operating result' =
+			
+			[Revenue] - [Expenditures]
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 49c7035a-334b-402b-9d25-f1e41ddf7472
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Prior Year Net operating result' =
+			
+			VAR CurrentYear = MAX(Query[FinanceYear])
+			RETURN
+			IF(
+			    HASONEVALUE(Query[FinanceYear]),
+			    CALCULATE(
+			        [Net operating result],
+			        FILTER(
+			            ALLSELECTED(Query[FinanceYear]),
+			            Query[FinanceYear] = CurrentYear - 1
+			        )
+			    )
+			)
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: eed14cc3-5bd3-4583-b3e9-f0a18b998f47
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Change in Net operating result' =
+			
+			IF(
+			    ISBLANK([Prior Year Net operating result]),
+			    BLANK(),
+			    [Net operating result] - [Prior Year Net operating result]
+			)
+		formatString: \$#,0.###############;(\$#,0.###############);\$#,0.###############
+		lineageTag: 85140186-84a4-486e-b5d7-1dd7ae4cf5da
+
+		annotation PBI_FormatHint = {"currencyCulture":"en-US"}
+
+	measure 'Net operating result of Revenue' = DIVIDE([Net operating result], [Revenue])
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: a99bf138-949f-4358-9f36-84d09ee24544
+
+	measure 'Expenditure Share %' =
+			
+			DIVIDE(
+			    [Expenditures],
+			    CALCULATE(
+			        [Expenditures],
+			        ALL(Query[AccountDescription]),
+			        ALL(Query[Expenditure Group])
+			    )
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 72af5bb6-477a-4ce6-8fbc-8e6821b9cb45
+
+	measure 'Revenue Share %' =
+			
+			DIVIDE(
+			    [Revenue],
+			    CALCULATE([Revenue], ALL(Query[AccountDescription]))
+			)
+		formatString: 0.00%;-0.00%;0.00%
+		lineageTag: 613450ba-8188-491c-a1c1-cbc237ed1cbd
+
+	column Column
+		formatString: 0
+		lineageTag: 0bf6fcb7-b87e-4a1b-9f36-fba418368c7f
+		summarizeBy: sum
+		isNameInferred
+		sourceColumn: [Column]
+
+		annotation SummarizationSetBy = Automatic
+
+	partition 'Question 2' = calculated
+		mode: import
+		source = Row("Column", BLANK())
+
+	annotation PBI_Id = 1cd3be4761ff472cbc9dc655ded39676
+
+	annotation 436ba87b-9c83-4389-a31b-ebd06a36be98 = {"Expression":""}
+

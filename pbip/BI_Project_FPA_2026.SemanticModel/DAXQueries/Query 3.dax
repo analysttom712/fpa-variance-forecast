@@ -1,0 +1,7 @@
+DEFINE
+    MEASURE 'Ratios'[Net Profit Margin %] = DIVIDE([Net operating result], [Revenue])
+
+EVALUATE
+    SUMMARIZECOLUMNS(
+        "Net Profit Margin %", [Net Profit Margin %]
+    )
