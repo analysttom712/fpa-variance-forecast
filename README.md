@@ -74,6 +74,16 @@ These fixes are based on the full-database analysis in [deeper-model/](deeper-mo
 
 ## Credits
 
-I chose the questions, checked the shape of the data, and tested and corrected every result. The SQL and DAX were written with AI assistance. I read and tested every query and measure myself.
+I chose the questions, checked the shape of the data, and tested and corrected every result.
+
+Who wrote what:
+
+| Code | Written by |
+|---|---|
+| `sql/` (all three queries) | Me |
+| `dax/fpa-measures.dax` (35 measures) | Me and Claude (AI) together. There is no per-measure record of who wrote which. I tested and corrected every measure |
+| `deeper-model/` (SQL, DAX and the five Deeper pages) | Claude (AI) at my direction. I checked the results against SQL Server |
+
+Each file also says who wrote it in its first lines.
 
 Tools: SQL Server (SSMS), Power BI, DAX.
